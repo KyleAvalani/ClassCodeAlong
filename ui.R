@@ -7,27 +7,44 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
-
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
+my.ui <- navbarPage(
   
   # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  "In Class Survey Data",
   
   # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-       sliderInput("bins",
-                   "Number of bins:",
-                   min = 1,
-                   max = 50,
-                   value = 30)
-    ),
-    
-    # Show a plot of the generated distribution
-    mainPanel(
-       plotOutput("distPlot")
+  tabPanel("ScatterPlot",
+      sidebarLayout(
+      sidebarPanel(
+        sliderInput("hours",
+                    "Minimum number of hours:",
+                    min = 0,
+                    max = 24,
+                    value = 4)
+      ),
+      
+      # Show a plot of the generated distribution
+      mainPanel(
+        plotlyOutput("distPlot")
+      )
     )
+  ),
+  tabPanel("Histogram",
+           sidebarLayout(
+             sidebarPanel(
+               selectInput('hist.var',"What do you want to histogram?",
+                           choices = list("How much sleep?" = "sleep",
+                                          "which type of pet?" = "pet")
+                           )
+             ),
+             
+             # Show a plot of the generated distribution
+             mainPanel(
+               # plotlyOutput("histVar")
+             )
+           )
   )
-))
+)
+
+# Define UI for application that draws a histogram
+shinyUI(my.ui)

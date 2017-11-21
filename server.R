@@ -8,19 +8,43 @@
 #
 
 library(shiny)
+library(dplyr)
+library(tidyr)
+library(plotly)
+
+raw.data <- read.csv('./data/crowd-sourced-survey_response_pivot_287555.csv', stringsAsFactors = FALSE)
+raw.data <- raw.data %>% 
+  select(Participant.ID, Response, Poll.Title)
+data <- spread(raw.data, key = Poll.Title, value = Response)
+colnames(data) <- c('id', 'pet', 'sleep', 'ta.help', 'raingear')
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
    
-  output$distPlot <- renderPlot({
+  output$distPlot <- renderPlotly({
+   
+    chart.data <- data %>% 
+      filter(as.numeric(sleep) > as.numeric(input$hours))
+     
+    plot_ly(x = chart.data$ta.help, 
+            y = as.numeric(chart.data$sleep), 
+            color = chart.data$pet, 
+            type = "scatter") %>% 
+      layout(xaxis = list(title="TA Help"))
+  })
+  
+  output$histPlot <- renderPlotly({
     
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    if(input$hist.var == 'sleep'){
+      data <-
+    } else{
+      
+    }
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    
+
+    plot_ly(x = data[,input$hist.var], 
+            type = "histogram") %>% 
+      layout(xaxis = list(title=input$hist.var))
   })
   
 })
